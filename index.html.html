@@ -1,0 +1,249 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Ibo x Juanson — RSVP</title>
+<style>
+  body {
+    font-family: system-ui, Arial;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    background: url('https://www.lovemydress.net/wp-content/uploads/2024/05/Locanda-in-Tuscany-Wedding-in-Pienza-381.jpg') no-repeat center center fixed;
+    background-size: cover;
+  }
+
+  .card {
+    width: 360px;
+    background: rgba(255, 255, 255, 0.75); /* slightly transparent */
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 8px 30px rgba(15,20,30,0.70);
+    text-align: center;
+  }
+
+  input, button {
+    width: 100%;
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid #e6e9ef;
+    font-size: 15px;
+    box-sizing: border-box;
+  }
+
+  button {
+    background: #800000;
+    color: #fff;
+    border: 0;
+    cursor: pointer;
+    margin-top: 8px;
+  }
+
+  .muted {
+    color: #6b7280;
+    font-size: 13px;
+  }
+
+  .result {
+    margin-top: 12px;
+    font-weight: 700;
+  }
+
+  .error {
+    margin-top: 12px;
+    color: #b91c1c;
+  }
+
+  .radio-row {
+    display: flex;
+    gap: 8px;
+  }
+
+  .radio-row label {
+    flex: 1;
+    background: #f3f4f6;
+    padding: 8px;
+    border-radius: 8px;
+    cursor: pointer;
+  }
+
+  .radio-row input {
+    margin-right: 6px;
+  }
+
+  iframe.hiddenFrame {
+    display: none;
+    width: 0;
+    height: 0;
+    border: 0;
+  }
+
+  #thankYou {
+    display: none;
+  }
+</style>
+</head>
+<body>
+  <div class="card">
+    <h3>Ibo x Juanson — RSVP</h3>
+
+    <!-- Step 1 Form -->
+    <div id="rsvpForm">
+      <p class="muted">Enter your name: </p>
+      <input id="nameInput" placeholder="e.g. Celine Juanson" autocomplete="name" />
+      <div style="height:8px"></div>
+
+      <p class="muted">Will you be attending the wedding?</p>
+      <div class="radio-row">
+        <label><input type="radio" name="attendance" value="Yes"> Yes</label>
+        <label><input type="radio" name="attendance" value="No"> No</label>
+      </div>
+
+      <button id="submitBtn">Submit</button>
+      <div id="loading" class="muted" style="margin-top:8px; display:none;">⏳ Checking...</div>
+      <div id="error" class="error"></div>
+    </div>
+
+    <!-- Step 2 Thank You -->
+    <div id="thankYou">
+      <div id="result" class="result"></div>
+      <button id="resetBtn">Submit Again</button>
+    </div>
+  </div>
+
+  <!-- Hidden iframe & form to POST to Apps Script (no CORS) -->
+  <iframe name="rsvp_iframe" class="hiddenFrame" id="rsvp_iframe"></iframe>
+  <form id="hiddenForm" action="https://script.google.com/macros/s/AKfycbxfevC7b2xMcGtqZuUf0I1wgxLjSAAg2WtOxtL7tAbnylaNs2EPzEufi0_1-vUKwHXL/exec" method="post" target="rsvp_iframe" style="display:none">
+    <input type="hidden" name="name" id="hf_name">
+    <input type="hidden" name="attendance" id="hf_attendance">
+    <input type="hidden" name="table" id="hf_table">
+    <input type="hidden" name="seat" id="hf_seat">
+  </form>
+
+<script>
+const CSV_PROXY = "https://script.google.com/macros/s/AKfycby1iT__b9U2cPGRu4XhaVCChxm-NJ7lPravQjBRQo29c-Z23WQ91rLFcOMlqeseyLA/exec";
+
+function norm(s){ return (s||"").toString().normalize('NFKD').replace(/[\u0300-\u036f]/g,'').trim().toLowerCase(); }
+function parseCsvLine(line){
+  const out = []; let cur = ""; let inQuote = false;
+  for (let i=0;i<line.length;i++){ const ch=line[i];
+    if(ch==='"'){inQuote=!inQuote; continue;}
+    if(ch===',' && !inQuote){out.push(cur); cur=""; continue;}
+    cur+=ch;
+  }
+  out.push(cur);
+  return out.map(s=>s.trim().replace(/^"|"$/g,''));
+}
+function fuzzyMatch(input, guestName){
+  const inputWords = input.toLowerCase().split(/\s+/).filter(w=>w);
+  const guestWords = guestName.toLowerCase().split(/\s+/);
+  return inputWords.every(w=>guestWords.some(gw=>gw.includes(w)));
+}
+
+// Submit handler
+document.getElementById('submitBtn').addEventListener('click', async function(){
+  const submitBtn = document.getElementById('submitBtn'); // grab button
+  submitBtn.disabled = true; // disable button during loading
+  const nameRaw = document.getElementById('nameInput').value || "";
+  const name = nameRaw.trim();
+
+  document.getElementById('loading').style.display = 'block';
+  document.getElementById('result').innerHTML = '';
+  document.getElementById('error').textContent = '';
+
+  const attendanceRadio = document.querySelector('input[name="attendance"]:checked');
+  if(!name){ 
+    document.getElementById('error').textContent="Please enter your name."; 
+    document.getElementById('loading').style.display='none'; 
+    submitBtn.disabled = false; 
+    return; 
+  }
+  if(!attendanceRadio){ 
+    document.getElementById('error').textContent="Please choose Yes or No."; 
+    document.getElementById('loading').style.display='none'; 
+    submitBtn.disabled = false; 
+    return; 
+  }
+
+  try{
+    const resp = await fetch(CSV_PROXY,{cache:"no-store"});
+    if(!resp.ok) throw new Error("Failed to fetch guest list");
+    const csvText = await resp.text();
+    const lines = csvText.split(/\r?\n/).map(l=>l.trim()).filter(l=>l.length>0);
+    if(lines.length<1) throw new Error("Empty CSV");
+
+    const header = parseCsvLine(lines[0]).map(h=>h.trim().toLowerCase());
+    const nameIdx = header.indexOf("name");
+    const tableIdx = header.indexOf("table");
+    const seatIdx = header.indexOf("seat");
+    if(nameIdx===-1 || seatIdx===-1 || tableIdx===-1)
+      throw new Error("CSV must have headers 'Name', 'Table', and 'Seat'");
+
+    const guests = [];
+    for(let i=1;i<lines.length;i++){
+      const cols=parseCsvLine(lines[i]);
+      const nm=(cols[nameIdx]||"").trim();
+      const table=(cols[tableIdx]||"").trim();
+      const seat=(cols[seatIdx]||"").trim();
+      if(nm) guests.push({name:nm,table:table,seat:seat,n:norm(nm)});
+    }
+
+    let matched = guests.find(g=>norm(g.name)===norm(name));
+    if(!matched){
+      const fuzzy = guests.filter(g=>fuzzyMatch(name,g.name));
+      if(fuzzy.length>=1) matched=fuzzy[0];
+    }
+
+    if(!matched){
+      document.getElementById('error').textContent="Sorry, we couldn't find your name. Please check your spelling.";
+      document.getElementById('loading').style.display='none';
+      submitBtn.disabled = false;
+      return;
+    }
+
+    const attendance = attendanceRadio.value;
+    if(attendance==="Yes"){
+      document.getElementById('result').innerHTML =
+        `🎉 Thank you, ${matched.name}! for celebrating with us!<br><br>
+<span style="font-weight:normal;">We reserved you a seat:</span><br>
+Table: ${matched.table} <br>Seat No.: ${matched.seat}<br><br>
+<span style="font-weight:normal;"><i>Kindly take a screenshot of this confirmation as this will serve as your entry pass to the venue</i></span>`;
+    }else{
+      document.getElementById('result').innerHTML =
+       ` 💌 Thank you, ${matched.name}, for letting us know.`;
+    }
+
+    // POST to Apps Script
+    document.getElementById('hf_name').value = matched.name;
+    document.getElementById('hf_attendance').value = attendance;
+    document.getElementById('hf_table').value = matched.table || "";
+    document.getElementById('hf_seat').value = matched.seat || "";
+    document.getElementById('hiddenForm').submit();
+
+    document.getElementById('loading').style.display = 'none';
+    document.getElementById('rsvpForm').style.display = 'none';
+    document.getElementById('thankYou').style.display = 'block';
+    submitBtn.disabled = false; // re-enable button just in case
+  }catch(err){
+    console.error(err);
+    document.getElementById('loading').style.display = 'none';
+    document.getElementById('error').textContent="Error fetching guest list. Please try again later.";
+    submitBtn.disabled = false;
+  }
+});
+
+// Reset handler
+document.getElementById('resetBtn').addEventListener('click', function(){
+  document.getElementById('rsvpForm').style.display='block';
+  document.getElementById('thankYou').style.display='none';
+  document.getElementById('nameInput').value='';
+  document.querySelectorAll('input[name="attendance"]').forEach(i=>i.checked=false);
+  document.getElementById('error').textContent='';
+  document.getElementById('result').innerHTML='';
+});
+</script>
+</body>
+</html>
