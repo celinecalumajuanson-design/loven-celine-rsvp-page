@@ -147,14 +147,14 @@ label {
 
 <div class="form-wrapper">
 
-<img src="image/logo3.png" class="form-logo">
+<img src="logo3.png" class="form-logo">
   <div class="card">
 
     <!-- Step 1 Form -->
     <div id="rsvpForm">
 <div style="text-align:center;">
 <br>
-<img src="image/RSVP1.png" class="form-rsvp">
+<img src="RSVP1.png" class="form-rsvp">
    </div>
       <p class="muted">Enter your name: </p>
       <input id="nameInput" placeholder="e.g. Celine Juanson" autocomplete="name" />
@@ -276,17 +276,17 @@ document.getElementById('submitBtn').addEventListener('click', async function(){
 
  `
 <center>
-<img src="image/confirm.png" style="width:100%"><br>
+<img src="confirm.png" style="width:100%"><br>
 🎉 Thank you, ${matched.name}! for celebrating with us!<br><br>
 <span style="font-weight:normal;">We reserved you a seat:</span><br>
 Table No.: ${matched.table} <br>Seat No.: ${matched.seat}<br><br>
-<img src="image/TABLE.png" style="width:60%"></br>
+<img src="TABLE.png" style="width:60%"></br>
 <span style="font-weight:normal;"><i>Please take a screenshot of this confirmation, as it will serve as your entry pass to the venue. We look forward to seeing you there!</i></span>
 </center><br>`;
     }else{
       document.getElementById('result').innerHTML =
        `
-<center><img src="image/couple.png" style="width:60%"><br>
+<center><img src="couple.png" style="width:60%"><br>
  💌 Thank you, ${matched.name}, for letting us know. We will miss you on our special day, but we truly appreciate your kind wishes! <br>-Love, Loven & Celine</center><br>`;
     }
 
@@ -321,6 +321,7 @@ document.getElementById('resetBtn').addEventListener('click', function(){
 </script>
 </body>
 </html>
+
 
 
 
