@@ -107,10 +107,11 @@ iframe.hiddenFrame {
 }
 
 .radio-row label {
-  display: flex;
+  display: inline-flex;
   align-items: center;
   gap: 5px;
-  flex: 1 1 45%; /* allows 2 per row */
+  padding:5px 10px;
+  flex: 1 1 auto; /* allows 2 per row */
   max-width: 45%; /* prevents overflowing */
   white-space: normal; /* allow text wrap */
   box-sizing: border-box;
@@ -337,6 +338,7 @@ document.getElementById('resetBtn').addEventListener('click', function(){
 </script>
 </body>
 </html>
+
 
 
 
