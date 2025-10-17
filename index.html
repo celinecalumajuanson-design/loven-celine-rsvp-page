@@ -100,20 +100,31 @@ iframe.hiddenFrame {
 .radio-row {
   display: flex;
   flex-wrap: wrap;
-  gap: 20px;
-  align-items: center;
+  gap: 10px; /* smaller gap to fit mobile */
   justify-content: center;
 }
 
-label {
-  display: inline-flex;
-  gap: 5px;
+.radio-row label {
+  display: flex;
   align-items: center;
-  white-space: normal;
-  padding: 10px;
-  min-width:120px;
-  flex: 1 1 auto;
-  
+  gap: 5px;
+  white-space: normal; /* allow wrapping */
+  padding: 8px 12px;
+  flex: 1 1 140px; /* flex-grow, flex-shrink, base width */
+  max-width: 45%;   /* prevents it from exceeding half the row */
+  box-sizing: border-box;
+}
+
+/* Extra tweak for very small screens */
+@media (max-width: 400px) {
+  .radio-row {
+    flex-direction: column; /* stack vertically */
+    gap: 8px;
+  }
+
+  .radio-row label {
+    max-width: 100%; /* take full width */
+  }
 }
 
 .form-rsvp {
@@ -324,6 +335,7 @@ document.getElementById('resetBtn').addEventListener('click', function(){
 </script>
 </body>
 </html>
+
 
 
 
