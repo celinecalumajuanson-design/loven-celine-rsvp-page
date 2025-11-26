@@ -37,20 +37,6 @@ body {
   background-color: rgba(255, 255, 255, 0.5);
   background-blend-mode: lighten;
 }
-  
-.card::after{
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: rgba(0,0,0,0.4);
-  z-index:0;
-  }
-
-.card > * {
-  position: relative;
-  z-index: 1;  /* keeps text above faded image */
-}
-
 
 input[type="text"], button {
   width: 100%;
@@ -357,6 +343,7 @@ document.getElementById('resetBtn').addEventListener('click', function(){
 </script>
 </body>
 </html>
+
 
 
 
