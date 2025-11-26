@@ -30,23 +30,9 @@ body {
   max-width: 500px; /* ✅ more consistent responsive width */
   width: 100%;
   box-sizing: border-box;
-}
-.card::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: inherit;
-  background-size: cover;
-  background-repeat: no-repeat;
-  opacity: 0.35; /* adjust transparency */
-  border-radius: 20px;
-  z-index: 0;
+  opacity: 0.35;
 }
 
-.card > * {
-  position: relative;
-  z-index: 1;
-}
 input[type="text"], button {
   width: 100%;
   padding: 10px;
@@ -352,6 +338,7 @@ document.getElementById('resetBtn').addEventListener('click', function(){
 </script>
 </body>
 </html>
+
 
 
 
