@@ -18,9 +18,10 @@ body {
 }
 
 .card {
-  
+  background-image: url("bg.jpg");
+  bacgkground-size:cover;
+  background-repeat: no repeat;
   background-position: center; /* ✅ added missing semicolon*/
-  
   padding: 20px;
   margin: 50px;
   border-radius: 20px;
@@ -29,11 +30,17 @@ body {
   max-width: 500px; /* ✅ more consistent responsive width */
   width: 100%;
   box-sizing: border-box;
-  
+  position:relative;
+  overflow:hidden;
 }
-.card {
-  position: relative;
-  overflow: hidden;
+  .card::after{
+    content: "";
+  position: absolute;
+  inset: 0;
+    background: rgba(0,0,0,0.4)
+    z-index:0;
+  }
+
 }
 .card::before {
   content: "";
@@ -356,6 +363,7 @@ document.getElementById('resetBtn').addEventListener('click', function(){
 </script>
 </body>
 </html>
+
 
 
 
