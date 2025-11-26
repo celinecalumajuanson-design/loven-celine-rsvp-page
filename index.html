@@ -16,19 +16,34 @@ body {
     no-repeat center center fixed;
   background-size: cover;
 }
+
+.card {
+  background-image: url("bg.jpg");
+  background-size: cover;
+  background-position: center; /* ✅ added missing semicolon*/
+  background-repeat: no-repeat;
+  padding: 20px;
+  margin: 50px;
+  border-radius: 20px;
+  box-shadow: 0 8px 30px rgba(15,20,30,0.70);
+  min-width: 290px;
+  max-width: 500px; /* ✅ more consistent responsive width */
+  width: 100%;
+  box-sizing: border-box;
+  
+}
 .card {
   position: relative;
-  background: none; /* remove direct image */
-  border-radius: 20px;
-  overflow: hidden; /* keeps pseudo-image inside rounded corners */
+  overflow: hidden;
 }
-
 .card::before {
   content: "";
   position: absolute;
   inset: 0;
-  background: url("bg.jpg") no-repeat center/cover;
-  opacity: 0.4;    /* ★ Adjust this number (0.1 - 1.0) */
+  background-image: inherit;
+  background-size: cover;
+  background-repeat: no-repeat;
+  opacity: 0.35;    /* ★ Adjust this number (0.1 - 1.0) */
   z-index: 0;
 }
 
@@ -343,6 +358,7 @@ document.getElementById('resetBtn').addEventListener('click', function(){
 </script>
 </body>
 </html>
+
 
 
 
