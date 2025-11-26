@@ -22,20 +22,33 @@ body {
   padding: 20px;
   margin: 50px;
   border-radius: 20px;
-  box-shadow: 0 8px 30px rgba(15,20,30,0.70);
   min-width: 290px;
-  max-width: 500px; /* ✅ more consistent responsive width */
+  max-width: 500px;
   width: 100%;
   box-sizing: border-box;
   overflow: hidden;
 
+  /* Remove solid color */
+  background: none;
+}
+
+/* Transparent background image layer */
+.card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
   background-image: url('bg.jpg');
   background-size: cover;
   background-repeat: no-repeat;
   background-position: center;
-  
-  background-color: rgba(255, 255, 255, 0.5);
-  background-blend-mode: lighten;
+  opacity: 0.3;  /* adjust transparency 0.0–1.0 */
+  z-index: 0;
+}
+
+/* Make sure your content stays above */
+.card > * {
+  position: relative;
+  z-index: 1;
 }
 
 input[type="text"], button {
@@ -343,6 +356,7 @@ document.getElementById('resetBtn').addEventListener('click', function(){
 </script>
 </body>
 </html>
+
 
 
 
