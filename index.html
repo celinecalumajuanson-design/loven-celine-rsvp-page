@@ -9,7 +9,7 @@ body {
   font-family: system-ui, Arial;
   margin: 0;
   display: flex;
-  /*align-items: center;*/
+  align-items: flex-start;
   justify-content: flex-start;
   min-height: 100vh; /* ✅ allows page to grow taller than viewport */
   background: url("bg1.jpg") 
@@ -20,7 +20,7 @@ body {
 .card {
   background-image: url("bg.jpg");
   background-size: cover;
-  /*background-position: center;  ✅ added missing semicolon */
+  background-position: center;  ✅ added missing semicolon
   background-repeat: no-repeat;
   padding: 20px;
   margin: 50px;
@@ -78,7 +78,7 @@ iframe.hiddenFrame {
 .form-wrapper {
   display: flex;
   flex-direction: column;  /* ✅ stack logo and form vertically */
-  align-items: center;
+  align-items: flex-start;
   justify-content: flex-start; /* ✅ so it starts from top */
   overflow: visible;
   margin: 0;
@@ -338,6 +338,7 @@ document.getElementById('resetBtn').addEventListener('click', function(){
 </script>
 </body>
 </html>
+
 
 
 
