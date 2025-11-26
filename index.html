@@ -33,24 +33,17 @@ body {
   position:relative;
   overflow:hidden;
 }
+  
   .card::after{
     content: "";
   position: absolute;
   inset: 0;
-    background: rgba(0,0,0,0.4)
+    background: rgba(0,0,0,0.4);
     z-index:0;
   }
 
-}
-.card::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background-image: url("bg.jpg") no-repeat center center;
-  background-size: cover;
-  opacity: 0.5;    /* ★ Adjust this number (0.1 - 1.0) */
-  z-index: 0;
-}
+
+
 
 .card > * {
   position: relative;
@@ -363,6 +356,7 @@ document.getElementById('resetBtn').addEventListener('click', function(){
 </script>
 </body>
 </html>
+
 
 
 
